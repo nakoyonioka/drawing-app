@@ -1,0 +1,37 @@
+body {
+    background-color: #e4fbff;
+    font-family: 'Poppins', sans-serif;
+}
+
+h1 {
+    padding-top: 5%;
+    font-size: 4rem;
+    line-height: 1.5;
+}
+
+.conatainer-home {
+    padding: 10% 30%;
+}
+
+.a-link {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    padding: 8%;
+}
+
+.a-link:hover {
+    background-color: rgb(77, 148, 164);
+    color: black;
+}
+
+.container-canvas {
+    padding-top: 3%;
+}
+
+.canvas-drawing {
+    background-color: white;
+    border: solid 2px;
+    border-radius: 3%;
+    margin: auto;
+    display: block;
+}
