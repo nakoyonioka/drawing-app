@@ -1,96 +1,87 @@
 // Keep everything in anonymous function, called on window load.
 let canvas = document.getElementById('canvas');
+canvas.width="1000";
+canvas.height="600";
+
 let context=canvas.getContext('2d');
 
 const socket = io();
 
 colorPicker=document.getElementById('color-picker');
-//colorPicker.addEventListener("input", watchColorPicker, false);
-colorPicker.addEventListener("change", watchColorPicker, false);
+colorPicker.addEventListener("input", watchColorPicker);
+colorPicker.addEventListener("change", watchColorPicker);
 
 clear=document.getElementById('clear');
-clear.addEventListener("click", clearCanvas);
+if(clear!==null)
+    clear.addEventListener("click", clearCanvas);
 
 
 let selectedColor=colorPicker.value;
+let line=5;
+let pattern=[];
 
+context.lineWidth=line;
 context.strokeStyle=selectedColor;
 
-if(window.addEventListener) {
-    window.addEventListener('load', function () {
-        let tool;
-        socket.on('mouse', data => {
-            var item = document.createElement('p');
-            item.innerHTML = "Hello world";
-            clear.appendChild(item);
-        });
+selectLine=document.getElementById('select-line');
+selectLine.addEventListener('change', function(){
+    line=this.options[this.selectedIndex].text;
+    context.lineWidth=line;
+});
 
-        function init () {
-            // Pencil tool instance.
-            tool = new tool_pencil();
+context.lineCap='round';
 
-            // Attach the mousedown, mousemove and mouseup event listeners.
-            canvas.addEventListener('mousedown', ev_canvas, false);
-            canvas.addEventListener('mousemove', ev_canvas, false);
-            canvas.addEventListener('mouseup',   ev_canvas, false);
+
+let username="USER";
+let room="ROOM";
+
+const usernameInput=document.getElementById("username");
+const roomInput=document.getElementById("room");
+
+const userList=document.getElementById("users");
+
+window.addEventListener('load', function () {
+    
+    let x,y;
+    let drawing=false;
+
+    function startDrawing(e){
+        drawing=true;
+        draw(e);
+    }
+
+    function finishedDrawing(){
+        drawing=false;
+        context.beginPath();
+    }
+
+    function draw(e){
+        if(!drawing) return;
+        if (e.layerX || e.layerX == 0) { // Firefox
+            // added -this.offsetLeft, and -this.offsetTop
+            x = e.layerX - this.offsetLeft;
+            y = e.layerY - this.offsetTop;
+        } 
+        else if (e.offsetX || e.offsetX == 0) { // Opera
+            x = e.offsetX;
+            y = e.offsetY;
         }
-        // This painting tool works like a drawing pencil which tracks the mouse 
-        // movements.
-        function tool_pencil () {
-            const tool = this;
-            this.started = false;
-            
+        context.lineTo(x,y);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(x,y);
+        sendmouse(x,y, context.strokeStyle, context.lineWidth);
+    } 
 
-            // This is called when you start holding down the mouse button.
-            // This starts the pencil drawing.
-            this.mousedown = function (ev) {
-                context.beginPath();
-                context.moveTo(ev._x-canvas.offsetLeft, ev._y-canvas.offsetTop);
-                tool.started = true;
-            };
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mouseup', finishedDrawing);
+    canvas.addEventListener('mousemove', draw);
 
-            // This function is called every time you move the mouse. Obviously, it only 
-            // draws if the tool.started state is set to true (when you are holding down 
-            // the mouse button).
-            this.mousemove = function (ev) {
-                if (tool.started) {
-                    context.lineTo(ev._x-canvas.offsetLeft, ev._y-canvas.offsetTop);
-                    context.stroke();
-                }
-                sendmouse(ev._x, ev._y, canvas.offsetLeft, canvas.offsetTop)
-            };
+    username=usernameInput.innerHTML;
+    room=roomInput.innerHTML;
+    socket.emit('joinRoom', {username, room});
+}); 
 
-            // This is called when you release the mouse button.
-            this.mouseup = function (ev) {
-                if (tool.started) {
-                    tool.mousemove(ev);
-                    tool.started = false;
-                }
-            };
-        }
-
-        // The general-purpose event handler. This function just determines the mouse 
-        // position relative to the canvas element.
-        function ev_canvas (ev) {
-            if (ev.layerX || ev.layerX == 0) { // Firefox
-                ev._x = ev.layerX;
-                ev._y = ev.layerY;
-            } else if (ev.offsetX || ev.offsetX == 0) { // Opera
-                ev._x = ev.offsetX;
-                ev._y = ev.offsetY;
-            }
-
-            // Call the event handler of the tool.
-            const func = tool[ev.type];
-            if (func) {
-                func(ev);
-            }
-        }
-
-        init();
-
-    }, false); 
-}
 
 function watchColorPicker(event) {
     context.strokeStyle=event.target.value;
@@ -100,6 +91,8 @@ function watchColorPicker(event) {
 function clearCanvas(event){
     event.preventDefault();
     context.clearRect(0, 0, canvas.width, canvas.height);
+    socket.emit('clear screen', "clear");
+
 }
 
 function download_png(el) {
@@ -110,14 +103,35 @@ function download_png(el) {
 
 
 // Sending data to the socket
-function sendmouse(x, y, pX, pY,color) {
+function sendmouse(x, y,color, width) {
     const data = {
         x: x,
         y: y,
-        px: pX,
-        py: pY,
         color: color,
+        width: width
     }
     socket.emit('mouse', data);
 }
 
+socket.on('mouse', data => {
+    context.strokeStyle=data.color;
+    context.lineWidth=data.width;
+    context.beginPath();
+    context.moveTo(data.x, data.y);
+    context.lineTo(data.x, data.y);
+    context.stroke();
+    context.beginPath();
+});
+
+socket.on('clear screen', data => {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+//get room and users
+socket.on('roomUsers', ({room, users})=>{
+    outputUsers(users);
+});
+
+function outputUsers(users){
+    userList.innerHTML=`${users.map(user=>`<li class="nav">${user.username}</li>`).join('')}`;
+}
