@@ -50,12 +50,25 @@
                         <option value="3">20</option>
                     </select>  
                 </div>
+                <div class="input-group mt-3 mb-3">
+                    <input id="word-to-guess" type="text" class="form-control" placeholder="Enter word" aria-label="Enter word">
+                    <button id="add-word" class="ml-3 btn btn-sm btn-dark">Add</button>
+                </div>
                 <a class="btn btn-md btn-dark mt-5" id="download" download="drawing.png" href="" onclick="download_png(this);">Save</a>
             </div>
-            <div class="col-lg-10">
-                <canvas id="canvas" class="canvas-drawing">
+            <div class="col-lg-9">
+                <canvas id="canvas" width="1000" height="600" class="canvas-drawing">
 
                 </canvas>
+            </div>
+            <div class="col-lg-1 bg-dark mt-0 py-0">
+                    <div class="text-white">
+                        <div class="mt-0">
+                            <h6 class="text-white">Words</h3>
+                            <ul id="word-list" class="nav flex-column py-2 mt-2">
+                            </ul>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
@@ -64,6 +77,6 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous">
     </script>
-    <script src="/js/canvasDrawing.js"></script>
+    <script src="/js/clientDrawing.js"></script>
 </body>
 </html>

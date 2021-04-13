@@ -5,8 +5,6 @@ canvas.height="600";
 
 let context=canvas.getContext('2d');
 
-const socket = io();
-
 colorPicker=document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);
 colorPicker.addEventListener("change", watchColorPicker);
@@ -30,7 +28,6 @@ selectLine.addEventListener('change', function(){
 });
 
 context.lineCap='round';
-
 
 let username="USER";
 let room="ROOM";
@@ -70,7 +67,6 @@ window.addEventListener('load', function () {
         context.stroke();
         context.beginPath();
         context.moveTo(x,y);
-        sendmouse(x,y, context.strokeStyle, context.lineWidth);
     } 
 
     canvas.addEventListener('mousedown', startDrawing);
@@ -79,20 +75,16 @@ window.addEventListener('load', function () {
 
     username=usernameInput.innerHTML;
     room=roomInput.innerHTML;
-    socket.emit('joinRoom', {username, room});
 }); 
 
 
 function watchColorPicker(event) {
     context.strokeStyle=event.target.value;
-    //socket.emit('color', event.target.value);
 }
 
 function clearCanvas(event){
     event.preventDefault();
     context.clearRect(0, 0, canvas.width, canvas.height);
-    socket.emit('clear screen', "clear");
-
 }
 
 function download_png(el) {
@@ -100,37 +92,6 @@ function download_png(el) {
   var imageURI = canvas.toDataURL("image/jpg");
   el.href = imageURI;
 };
-
-
-// Sending data to the socket
-function sendmouse(x, y,color, width) {
-    const data = {
-        x: x,
-        y: y,
-        color: color,
-        width: width
-    }
-    socket.emit('mouse', data);
-}
-
-socket.on('mouse', data => {
-    context.strokeStyle=data.color;
-    context.lineWidth=data.width;
-    context.beginPath();
-    context.moveTo(data.x, data.y);
-    context.lineTo(data.x, data.y);
-    context.stroke();
-    context.beginPath();
-});
-
-socket.on('clear screen', data => {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-});
-
-//get room and users
-socket.on('roomUsers', ({room, users})=>{
-    outputUsers(users);
-});
 
 function outputUsers(users){
     userList.innerHTML=`${users.map(user=>`<li class="nav">${user.username}</li>`).join('')}`;
