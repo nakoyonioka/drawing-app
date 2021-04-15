@@ -1,7 +1,7 @@
 const mongoose=require('mongoose');
 const Schema=mongoose.Schema;
 
-const roomSchema=new Schema({
+const charadesSchema=new Schema({
     name: {
         type:String,
         required:true,
@@ -10,9 +10,13 @@ const roomSchema=new Schema({
     password:{
         type:String,
         required:true
+    },
+    owner :{
+        type:String,
+        required:true
     }
 });
 
-const Room=mongoose.model('Room', roomSchema);
+const Charades=mongoose.model('Charades', charadesSchema);
 
-module.exports=Room;
+module.exports=Charades;

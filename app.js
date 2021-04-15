@@ -10,7 +10,8 @@ const ExpressError=require('./utils/expressError');
 const Joi=require('joi');
 const session=require('express-session');
 const flash=require('connect-flash');
-const Room = require('./models/room');
+const Whiteboard = require('./models/whiteboard');
+const Charades = require('./models/charades');
 
 mongoose.connect('mongodb://localhost:27017/drawing', {useNewUrlParser: true, useUnifiedTopology: true})
 .then(()=>{
@@ -29,6 +30,7 @@ let username="USER";
 let room="DEFAULT";
 let password="PASS";
 let message="Invalid room name";
+let owner="NULL";
 const drawQueue=[];
 
 app.set('view engine', 'ejs')
@@ -72,20 +74,20 @@ app.get('/create', (req,res)=>{
     res.render('create');
 });
 
-app.post('/createroom', catchAsync(async (req,res,next)=>{
-    const roomSchema=Joi.object({
+app.post('/whiteboard-create', catchAsync(async (req,res,next)=>{
+    const whiteboardSchema=Joi.object({
         room:Joi.object({
             name:Joi.string().required(),
             username:Joi.string().required(),
             password:Joi.string().required()
         }).required()
     })
-    const {error} =roomSchema.validate(req.body);
+    const {error} =whiteboardSchema.validate(req.body);
     if(error){
         const msg=error.details.map(el=>el.message).join(',');
         throw new ExpressError(msg,400);
     }
-    const result= await Room.findOne({name : req.body.room.name});
+    const result= await Whiteboard.findOne({name : req.body.room.name});
     if(result!=null){
         //self.invalidate('name', 'name already exists');
         //throw new ExpressError("Invalid room name", 400);
@@ -96,10 +98,9 @@ app.post('/createroom', catchAsync(async (req,res,next)=>{
         username=req.body.room.username;
         room=req.body.room.name;
         password=req.body.room.password;
-        const newRoom=await new Room({
+        const newRoom=await new Whiteboard({
             name:room,
-            password:password
-
+            password:password,
         });
         newRoom.save();
         res.redirect('drawing');
@@ -107,9 +108,70 @@ app.post('/createroom', catchAsync(async (req,res,next)=>{
     
 }));
 
-app.post('/joinroom', catchAsync(async (req,res,next)=>{
+app.post('/charades-create', catchAsync(async (req,res,next)=>{
+    const charadesSchema=Joi.object({
+        room:Joi.object({
+            name:Joi.string().required(),
+            username:Joi.string().required(),
+            password:Joi.string().required()
+        }).required()
+    })
+    const {error} =charadesSchema.validate(req.body);
+    if(error){
+        const msg=error.details.map(el=>el.message).join(',');
+        throw new ExpressError(msg,400);
+    }
+    const result= await Charades.findOne({name : req.body.room.name});
+    if(result!=null){
+        //self.invalidate('name', 'name already exists');
+        //throw new ExpressError("Invalid room name", 400);
+        req.flash('error', "Room name is already taken.");
+        return res.redirect('create');
+    }
+    else{
+        username=req.body.room.username;
+        room=req.body.room.name;
+        password=req.body.room.password;
+        owner=req.body.room.username;
+        const newRoom=await new Charades({
+            name:room,
+            password:password,
+            owner:owner
+        });
+        newRoom.save();
+        res.redirect('charades');
+    }
+}));
+
+app.post('/join-charades', catchAsync(async (req,res,next)=>{
     if(!req.body.room) throw new ExpressError('Invalid room name', 400);
-    const findRoom=await Room.findOne({name:req.body.room});
+    const findRoom=await Charades.findOne({name:req.body.room});
+    if(findRoom){
+        if(findRoom.password===req.body.password){
+            if(findRoom.owner===req.body.username){
+                owner=req.body.username;
+            }
+            else{
+                owner=findRoom.owner;
+            }
+            username=req.body.username;
+            room=req.body.room;
+            password=req.body.password;
+            
+            res.redirect('charades');
+        }
+        else{
+            res.render('join');
+        }
+    }
+    else{
+        res.render('join');
+    } 
+}));
+
+app.post('/join-whiteboard', catchAsync(async (req,res,next)=>{
+    if(!req.body.room) throw new ExpressError('Invalid room name', 400);
+    const findRoom=await Whiteboard.findOne({name:req.body.room});
     if(findRoom){
         if(findRoom.password===req.body.password){
             username=req.body.username;
@@ -124,12 +186,15 @@ app.post('/joinroom', catchAsync(async (req,res,next)=>{
     }
     else{
         res.render('join');
-    }
-    
+    } 
 }));
 
 app.get('/drawing', (req,res)=>{
     res.render('drawing', {username, room})
+});
+
+app.get('/charades', (req,res)=>{
+    res.render('charades', {username, room, owner})
 });
 
 app.all('*', (req,res,next)=>{
@@ -165,6 +230,11 @@ io.on('connection', (socket)=>{
         drawQueue.push([...args]);
         io.to(user.room).emit("mouse", ...args);
     });
+
+    socket.on('roomWords', (...data)=>{
+        const user=getCurrentUser(socket.id);
+        io.to(user.room).emit("roomWords", ...data);
+    })
 
     socket.on('clear screen', (data) => {
         socket.broadcast.emit('clear screen', data)

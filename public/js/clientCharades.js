@@ -2,7 +2,7 @@ const canvas = document.getElementById('canvas');
 const context=canvas.getContext('2d');
 
 canvas.width = canvas.clientWidth;
-canvas.height=3*canvas.clientHeight;
+canvas.height=1.5*canvas.clientHeight;
 
 const socket = io();
 
@@ -123,4 +123,46 @@ socket.emit('joinRoom', {username, room});
 function outputUsers(users){
     userList.innerHTML=`${users.map(user=>`<li class="nav">${user.username}</li>`).join('')}`;
 }
+
+const wordInput=document.getElementById('word-to-guess');
+const buttonWord=document.getElementById('add-word');
+const wordList=document.getElementById('word-list');
+let wordsRoom=[];
+
+let available=2;
+
+//get room and words
+socket.on('roomWords', ({room, words})=>{
+    wordsRoom=[...words];
+    outputWords(wordsRoom);
+});
+
+function outputWords(wordsRoom){
+    wordList.innerHTML=`${wordsRoom.map(word=>`<li class="nav">${word}</li>`).join('')}`;
+}
+
+buttonWord.addEventListener('click', function(e){
+    e.preventDefault();
+    if(available>0){
+        available=available-1;
+        wordsRoom.push(wordInput.value);
+        wordInput.value="";
+        wordList.innerHTML=`${wordsRoom.map(word=>`<li class="nav">${word}</li>`).join('')}`;
+        let words=wordsRoom;
+        socket.emit('roomWords', {room, words});
+    }
+});
+
+wordInput.addEventListener('keyup', (e)=>{
+    if(available>0){
+        if(e.key=="Enter"){
+            available=available-1;
+            wordsRoom.push(wordInput.value);
+            wordInput.value="";
+            wordList.innerHTML=`${wordsRoom.map(word=>`<li class="nav">${word}</li>`).join('')}`;
+            let words=wordsRoom;
+            socket.emit('roomWords', {room, words});
+        }
+    }
+})
 
