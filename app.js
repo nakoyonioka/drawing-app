@@ -1,15 +1,18 @@
-const express=require('express');
-const path=require('path');
-const app=express();
-const http=require('http');
-const server=http.createServer(app);
-const io=require('socket.io')(server)
 const mongoose = require('mongoose');
 const catchAsync=require('./utils/catchAsync');
 const ExpressError=require('./utils/expressError');
 const Joi=require('joi');
 const session=require('express-session');
 const flash=require('connect-flash');
+const engine=require('ejs-mate');
+
+const express=require('express');
+const path=require('path');
+const app=express();
+const http=require('http');
+const server=http.createServer(app);
+const io=require('socket.io')(server)
+
 const Whiteboard = require('./models/whiteboard');
 const Charades = require('./models/charades');
 
@@ -33,6 +36,7 @@ let message="Invalid room name";
 let owner="NULL";
 const drawQueue=[];
 
+app.engine('ejs', engine);
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, '/views'));
 
@@ -225,11 +229,14 @@ io.on('connection', (socket)=>{
 
     socket.on('mouse', (...args) => {
         const user=getCurrentUser(socket.id);
-        //socket.broadcast.emit('mouse', data)
-        //socket.broadcast.to(user.room).emit('mouse', data);
         drawQueue.push([...args]);
         io.to(user.room).emit("mouse", ...args);
     });
+
+    socket.on('drawer', (name)=>{
+        const user=getCurrentUser(socket.id);
+        io.to(user.room).emit('drawer', name);
+    })
 
     socket.on('roomWords', (...data)=>{
         const user=getCurrentUser(socket.id);
@@ -237,7 +244,13 @@ io.on('connection', (socket)=>{
     })
 
     socket.on('clear screen', (data) => {
-        socket.broadcast.emit('clear screen', data)
+        const user=getCurrentUser(socket.id);
+        io.to(user.room).emit("clear screen", data);
+    });
+
+    socket.on('correctWord', (data) => {
+        const user=getCurrentUser(socket.id);
+        io.to(user.room).emit("correctWord", data);
     });
 
     socket.on('disconnect', () => {

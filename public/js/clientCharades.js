@@ -2,7 +2,7 @@ const canvas = document.getElementById('canvas');
 const context=canvas.getContext('2d');
 
 canvas.width = canvas.clientWidth;
-canvas.height=1.5*canvas.clientHeight;
+canvas.height=1*canvas.clientHeight;
 
 const socket = io();
 
@@ -18,6 +18,7 @@ let selectedColor=colorPicker.value;
 let line=5;
 let pattern=[];
 
+
 context.lineWidth=line;
 context.strokeStyle=selectedColor;
 context.lineCap='round';
@@ -30,6 +31,8 @@ selectLine.addEventListener('change', function(){
 
 let mousePressed = false;
 let lastPos = null;
+
+let allowDraw=false;
 
 
 function draw(e) {
@@ -63,8 +66,10 @@ function mousePos(e) {
 }
 
 canvas.addEventListener("mousedown", (e) => {
-    mousePressed = true;
-    draw(e);
+    if(allowDraw){
+        mousePressed = true;
+        draw(e);
+    }
 });
 
 canvas.addEventListener("mousemove", (e) => {
@@ -84,21 +89,17 @@ document.addEventListener("mouseup", (e) => {
 
 let username="USER";
 let room="ROOM";
+let admin="ADMIN";
 
 const usernameInput=document.getElementById("username");
 const roomInput=document.getElementById("room");
 const userList=document.getElementById("users");
+admin=document.getElementById("admin").innerHTML.trim();
 
 function watchColorPicker(event) {
     selectedColor=event.target.value;
     context.strokeStyle=selectedColor;
     //socket.emit('color', event.target.value);
-}
-
-function clearCanvas(event){
-    event.preventDefault();
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    socket.emit('clear screen', "clear");
 }
 
 function download_png(el) {
@@ -116,12 +117,13 @@ socket.on('roomUsers', ({room, users})=>{
     outputUsers(users);
 });
 
-username=usernameInput.innerHTML;
+username=usernameInput.innerHTML.trim();
 room=roomInput.innerHTML;
 socket.emit('joinRoom', {username, room});
 
 function outputUsers(users){
-    userList.innerHTML=`${users.map(user=>`<li class="nav">${user.username}</li>`).join('')}`;
+    userList.innerHTML=`${users.map((user)=>`<li class="mt-1 nav"><a id="side" class="btn btn-sm btn-dark users-btns">${user.username}</a></li>`).join('')}`;
+    setAdmin();
 }
 
 const wordInput=document.getElementById('word-to-guess');
@@ -164,5 +166,73 @@ wordInput.addEventListener('keyup', (e)=>{
             socket.emit('roomWords', {room, words});
         }
     }
-})
+});
+
+let sideItem="NULL";
+
+function clearCanvas(event){
+    if(allowDraw || username==admin){
+        event.preventDefault();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        socket.emit('clear screen', "clear");
+    }
+}
+
+const goodGuess=document.getElementById('correct-guess');
+
+function setAdmin() {
+    if(username==admin){
+        allowDraw=true;
+        goodGuess.classList.add('d-none');
+    }
+    else{
+        allowDraw=false;
+        goodGuess.classList.remove('d-none');
+    }
+    for(let child of userList.childNodes){
+        if(child.childNodes[0].innerHTML.trim()==admin){
+            child.childNodes[0].style.color="red";
+            
+        }
+        else{
+            child.childNodes[0].style.color="blue";
+        }
+    }
+    sideItem=document.querySelectorAll('.users-btns');  
+    for(let side of sideItem){
+        side.addEventListener('click', adminPermissions);
+    }
+};
+
+const drawer=document.getElementById('who-is-drawing');
+drawer.innerHTML=`${admin} is drawing`;
+
+ function adminPermissions(event){
+    event.preventDefault();
+    if(username===admin){
+        let name=event.target.innerHTML;
+        socket.emit('drawer', name);
+    }
+}
+
+socket.on('drawer', (name)=>{
+    drawer.innerHTML=`${name} is drawing`;
+    if(username==name){
+        allowDraw=true;
+        goodGuess.classList.add('d-none');
+    }
+    else{
+        allowDraw=false;
+        goodGuess.classList.remove('d-none');
+    }
+});
+
+goodGuess.addEventListener('click', (e)=>{
+    e.preventDefault();
+    socket.emit('correctWord', 'correct');
+});
+
+socket.on('correctWord', (data)=>{
+    console.log("guess was good");
+});
 
