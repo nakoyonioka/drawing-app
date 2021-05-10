@@ -1,7 +1,10 @@
+if(process.env.NODE_ENV !== "production"){
+    require('dotenv').config();
+}
+
 const mongoose = require('mongoose');
 const catchAsync=require('./utils/catchAsync');
 const ExpressError=require('./utils/expressError');
-const Joi=require('joi');
 const session=require('express-session');
 const flash=require('connect-flash');
 const engine=require('ejs-mate');
@@ -13,10 +16,24 @@ const http=require('http');
 const server=http.createServer(app);
 const io=require('socket.io')(server)
 
+const helmet=require('helmet');
+
 const Whiteboard = require('./models/whiteboard');
 const Charades = require('./models/charades');
 
-mongoose.connect('mongodb://localhost:27017/drawing', {useNewUrlParser: true, useUnifiedTopology: true})
+const {whiteboardSchema, charadesSchema}=require('./schemas.js');
+const dbUrl=process.env.DB_URL || 'mongodb://localhost:27017/drawing';
+//const dbUrl='mongodb://localhost:27017/drawing';
+
+const MongoDBStore=require("connect-mongo")(session);
+
+
+mongoose.connect(dbUrl, {
+    useNewUrlParser: true, 
+    useUnifiedTopology: true,
+    useCreateIndex:true,
+    useFindAndModify:false
+})
 .then(()=>{
     console.log("MONGO connection open");
 })
@@ -36,6 +53,8 @@ let message="Invalid room name";
 let owner="NULL";
 const drawQueue=[];
 
+const secret=process.env.SECRET || "thisshouldbeabettersecret!"
+
 app.engine('ejs', engine);
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, '/views'));
@@ -43,18 +62,78 @@ app.set('views', path.join(__dirname, '/views'));
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: true}));
 
+
+const scriptSRC=[
+    "https://cdn.jsdelivr.net",
+    "https://fonts.gstatic.com"
+];
+
+const styleSRC=[
+    "https://stackpath.bootstrapcdn.com",  
+    "https://cdn.jsdelivr.net",
+    "https://fonts.googleapis.com",
+    "https://fonts.gstatic.com"
+];
+
+const fontSRC=["https://fonts.googleapis.com", "https://fonts.gstatic.com"];
+
+app.use(
+    helmet.contentSecurityPolicy({
+        directives:{
+            defaultSrc:[],
+            connectSrc:["'self'"],
+            scriptSrc:["'unsafe-inline'", "'self'", ...scriptSRC],
+            styleSrc:["'self'", "'unsafe-inline'", ...styleSRC],
+            workerSrc:["'self'", "blob:"],
+            objectSrc:[],
+            imgSrc:["'self'", "blob:", "data:"],
+            fontSrc:["'self'", ...fontSRC]
+        },
+    })
+);
+
+const store=new MongoDBStore({
+    url: dbUrl,
+    secret,
+    touchAfter:24*60*60
+});
+
+store.on('error', function(err){
+    console.log("session store error", e);
+})
+
 const sessionConfig={
-    secret:'thisshouldbeabettersecret!',
+    store,
+    name:'session',
+    secret,
     resave:false,
     saveUninitialized:true,
     cookie:{
         httpOnly:true,
+        //secure:true,
         expires:Date.now()+1000*3600*24*7, //expires in a week
         maxAge:1000*3600*24*7
     }
 }
 app.use(session(sessionConfig));
 app.use(flash());
+app.use(helmet());
+
+const validateBoardName=(req,res,next)=>{
+    const {error} =whiteboardSchema.validate(req.body);
+    if(error){
+        const msg=error.details.map(el=>el.message).join(',');
+        throw new ExpressError(msg,400);
+    }
+}
+
+const validateCharadesName=(req,res,next)=>{
+    const {error} =charadesSchema.validate(req.body);
+    if(error){
+        const msg=error.details.map(el=>el.message).join(',');
+        throw new ExpressError(msg,400);
+    }
+}
 
 app.use((req,res,next)=>{
     res.locals.success=req.flash('success');
@@ -78,21 +157,9 @@ app.get('/create', (req,res)=>{
     res.render('create');
 });
 
-app.post('/whiteboard-create', catchAsync(async (req,res,next)=>{
-    const whiteboardSchema=Joi.object({
-        room:Joi.object({
-            name:Joi.string().required(),
-            username:Joi.string().required(),
-            password:Joi.string().required()
-        }).required()
-    })
-    const {error} =whiteboardSchema.validate(req.body);
-    if(error){
-        const msg=error.details.map(el=>el.message).join(',');
-        throw new ExpressError(msg,400);
-    }
-    const result= await Whiteboard.findOne({name : req.body.room.name});
-    if(result!=null){
+app.post('/whiteboard-create', validateBoardName, catchAsync(async (req,res,next)=>{
+    const newBoard= await Whiteboard.findOne({name : req.body.room.name});
+    if(newBoard!=null){
         //self.invalidate('name', 'name already exists');
         //throw new ExpressError("Invalid room name", 400);
         req.flash('error', "Room name is already taken.");
@@ -112,21 +179,9 @@ app.post('/whiteboard-create', catchAsync(async (req,res,next)=>{
     
 }));
 
-app.post('/charades-create', catchAsync(async (req,res,next)=>{
-    const charadesSchema=Joi.object({
-        room:Joi.object({
-            name:Joi.string().required(),
-            username:Joi.string().required(),
-            password:Joi.string().required()
-        }).required()
-    })
-    const {error} =charadesSchema.validate(req.body);
-    if(error){
-        const msg=error.details.map(el=>el.message).join(',');
-        throw new ExpressError(msg,400);
-    }
-    const result= await Charades.findOne({name : req.body.room.name});
-    if(result!=null){
+app.post('/charades-create', validateCharadesName, catchAsync(async (req,res,next)=>{
+    const newCharades= await Charades.findOne({name : req.body.room.name});
+    if(newCharades!=null){
         //self.invalidate('name', 'name already exists');
         //throw new ExpressError("Invalid room name", 400);
         req.flash('error', "Room name is already taken.");
