@@ -44,7 +44,7 @@ mongoose.connect(dbUrl, {
 
 const {userJoin, getCurrentUser, userLeave, getRoomUsers}=require('./utils/users');
 
-const PORT=3000 || process.env.PORT;
+const PORT=process.env.PORT || 3000;
 
 let username="USER";
 let room="DEFAULT";
@@ -323,5 +323,5 @@ io.on('connection', (socket)=>{
 
 
 server.listen(PORT, ()=>{
-    console.log("Server up on port 3000");
+    console.log("Server up");
 });
