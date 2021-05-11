@@ -27,7 +27,6 @@ const dbUrl=process.env.DB_URL;
 
 const MongoStore=require("connect-mongo");
 
-
 mongoose.connect(dbUrl, {
     useNewUrlParser: true, 
     useUnifiedTopology: true,
