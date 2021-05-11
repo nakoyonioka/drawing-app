@@ -22,7 +22,7 @@ const Whiteboard = require('./models/whiteboard');
 const Charades = require('./models/charades');
 
 const {whiteboardSchema, charadesSchema}=require('./schemas.js');
-const dbUrl=process.env.DB_URL || 'mongodb://localhost:27017/drawing';
+const dbUrl=process.env.DB_URL;
 //const dbUrl='mongodb://localhost:27017/drawing';
 
 const MongoStore=require("connect-mongo");
@@ -53,7 +53,7 @@ let message="Invalid room name";
 let owner="NULL";
 const drawQueue=[];
 
-const secret=process.env.SECRET || "thisshouldbeabettersecret!"
+const secret=process.env.SECRET;
 
 app.engine('ejs', engine);
 app.set('view engine', 'ejs')
