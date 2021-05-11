@@ -91,10 +91,11 @@ var scriptSRC = ["https://cdn.jsdelivr.net", "https://fonts.gstatic.com", "https
 var styleSRC = ["https://stackpath.bootstrapcdn.com", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://fonts.gstatic.com"];
 var fontSRC = ["https://fonts.googleapis.com", "https://fonts.gstatic.com"];
 app.use(helmet.contentSecurityPolicy({
+  useDefaults: false,
   directives: {
     defaultSrc: [],
     connectSrc: ["'self'"],
-    scriptSrc: ["'unsafe-inline'", "'self'", "'self-src-elem'"].concat(scriptSRC),
+    scriptSrc: ["'unsafe-inline'", "'self'"].concat(scriptSRC),
     styleSrc: ["'self'", "'unsafe-inline'"].concat(styleSRC),
     workerSrc: ["'self'", "blob:"],
     objectSrc: [],

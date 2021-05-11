@@ -80,10 +80,11 @@ const fontSRC=["https://fonts.googleapis.com", "https://fonts.gstatic.com"];
 
 app.use(
     helmet.contentSecurityPolicy({
+        useDefaults:false,
         directives:{
             defaultSrc:[],
             connectSrc:["'self'"],
-            scriptSrc:["'unsafe-inline'", "'self'",  "'self-src-elem'", ...scriptSRC],
+            scriptSrc:["'unsafe-inline'", "'self'", ...scriptSRC],
             styleSrc:["'self'", "'unsafe-inline'", ...styleSRC],
             workerSrc:["'self'", "blob:"],
             objectSrc:[],
