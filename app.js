@@ -92,10 +92,6 @@ app.use(
     })
 );
 
-store.on('error', function(err){
-    console.log("session store error", e);
-})
-
 const sessionConfig={
     store:MongoStore.create({
         mongoUrl:dbUrl,
