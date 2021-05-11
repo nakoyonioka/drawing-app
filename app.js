@@ -83,7 +83,7 @@ app.use(
         directives:{
             defaultSrc:[],
             connectSrc:["'self'"],
-            scriptSrc:["'unsafe-inline'", "'self'", ...scriptSRC],
+            scriptSrc:["'unsafe-inline'", "'self'",  "'self-src-elem'", ...scriptSRC],
             styleSrc:["'self'", "'unsafe-inline'", ...styleSRC],
             workerSrc:["'self'", "blob:"],
             objectSrc:[],

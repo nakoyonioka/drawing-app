@@ -94,7 +94,7 @@ app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: [],
     connectSrc: ["'self'"],
-    scriptSrc: ["'unsafe-inline'", "'self'"].concat(scriptSRC),
+    scriptSrc: ["'unsafe-inline'", "'self'", "'self-src-elem'"].concat(scriptSRC),
     styleSrc: ["'self'", "'unsafe-inline'"].concat(styleSRC),
     workerSrc: ["'self'", "blob:"],
     objectSrc: [],
