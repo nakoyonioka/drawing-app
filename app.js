@@ -25,7 +25,7 @@ const {whiteboardSchema, charadesSchema}=require('./schemas.js');
 const dbUrl=process.env.DB_URL || 'mongodb://localhost:27017/drawing';
 //const dbUrl='mongodb://localhost:27017/drawing';
 
-const MongoDBStore=require("connect-mongo")(session);
+const MongoStore=require("connect-mongo")(session);
 
 
 mongoose.connect(dbUrl, {
@@ -92,7 +92,7 @@ app.use(
     })
 );
 
-const store=new MongoDBStore({
+const store=new MongoStore({
     url: dbUrl,
     secret,
     touchAfter:24*60*60
