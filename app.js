@@ -22,6 +22,7 @@ const Whiteboard = require('./models/whiteboard');
 const Charades = require('./models/charades');
 
 const {whiteboardSchema, charadesSchema}=require('./schemas.js');
+
 const dbUrl=process.env.DB_URL;
 
 //const dbUrl='mongodb://localhost:27017/drawing';
@@ -63,7 +64,9 @@ app.use(express.urlencoded({extended: true}));
 
 const scriptSRC=[
     "https://cdn.jsdelivr.net",
-    "https://fonts.gstatic.com"
+    "https://fonts.gstatic.com",
+    "https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js",
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"
 ];
 
 const styleSRC=[
