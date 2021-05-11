@@ -23,15 +23,14 @@ const Charades = require('./models/charades');
 
 const {whiteboardSchema, charadesSchema}=require('./schemas.js');
 const dbUrl=process.env.DB_URL;
+
 //const dbUrl='mongodb://localhost:27017/drawing';
 
 const MongoStore=require("connect-mongo");
 
 mongoose.connect(dbUrl, {
     useNewUrlParser: true, 
-    useUnifiedTopology: true,
-    useCreateIndex:true,
-    useFindAndModify:false
+    useUnifiedTopology: true
 })
 .then(()=>{
     console.log("MONGO connection open");
