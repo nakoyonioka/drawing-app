@@ -25,7 +25,7 @@ const {whiteboardSchema, charadesSchema}=require('./schemas.js');
 const dbUrl=process.env.DB_URL || 'mongodb://localhost:27017/drawing';
 //const dbUrl='mongodb://localhost:27017/drawing';
 
-const MongoStore=require("connect-mongo")(session);
+const MongoStore=require("connect-mongo");
 
 
 mongoose.connect(dbUrl, {
@@ -92,18 +92,16 @@ app.use(
     })
 );
 
-const store=new MongoStore({
-    url: dbUrl,
-    secret,
-    touchAfter:24*60*60
-});
-
 store.on('error', function(err){
     console.log("session store error", e);
 })
 
 const sessionConfig={
-    store,
+    store:MongoStore.create({
+        mongoUrl:dbUrl,
+        secret:secret,
+        touchAfter:24*60*60
+    }),
     name:'session',
     secret,
     resave:false,
