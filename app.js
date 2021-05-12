@@ -23,9 +23,9 @@ const Charades = require('./models/charades');
 
 const {whiteboardSchema, charadesSchema}=require('./schemas.js');
 
-//const dbUrl=process.env.DB_URL;
+const dbUrl=process.env.DB_URL;
 
-const dbUrl='mongodb://localhost:27017/drawing';
+//const dbUrl='mongodb://localhost:27017/drawing';
 
 const MongoStore=require("connect-mongo");
 
@@ -84,8 +84,7 @@ app.use(
         directives:{
             defaultSrc:[],
             connectSrc:["'self'"],
-            scriptSrc:["'self'", ...scriptSRC],
-            scriptSrcElem:["'self'", ...scriptSRC],
+            scriptSrc:["'self'", "'unsafe-inline'", ...scriptSRC],
             styleSrc:["'self'", "'unsafe-inline'", ...styleSRC],
             workerSrc:["'self'", "blob:"],
             objectSrc:["'self'"],

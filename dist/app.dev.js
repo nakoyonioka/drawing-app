@@ -50,10 +50,9 @@ var Charades = require('./models/charades');
 
 var _require = require('./schemas.js'),
     whiteboardSchema = _require.whiteboardSchema,
-    charadesSchema = _require.charadesSchema; //const dbUrl=process.env.DB_URL;
+    charadesSchema = _require.charadesSchema;
 
-
-var dbUrl = 'mongodb://localhost:27017/drawing';
+var dbUrl = process.env.DB_URL; //const dbUrl='mongodb://localhost:27017/drawing';
 
 var MongoStore = require("connect-mongo");
 
@@ -96,8 +95,7 @@ app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: [],
     connectSrc: ["'self'"],
-    scriptSrc: ["'self'"].concat(scriptSRC),
-    scriptSrcElem: ["'self'"].concat(scriptSRC),
+    scriptSrc: ["'self'", "'unsafe-inline'"].concat(scriptSRC),
     styleSrc: ["'self'", "'unsafe-inline'"].concat(styleSRC),
     workerSrc: ["'self'", "blob:"],
     objectSrc: ["'self'"],
