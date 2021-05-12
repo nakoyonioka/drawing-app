@@ -23,15 +23,16 @@ const Charades = require('./models/charades');
 
 const {whiteboardSchema, charadesSchema}=require('./schemas.js');
 
-const dbUrl=process.env.DB_URL;
+//const dbUrl=process.env.DB_URL;
 
-//const dbUrl='mongodb://localhost:27017/drawing';
+const dbUrl='mongodb://localhost:27017/drawing';
 
 const MongoStore=require("connect-mongo");
 
 mongoose.connect(dbUrl, {
     useNewUrlParser: true, 
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex:true
 })
 .then(()=>{
     console.log("MONGO connection open");
@@ -80,14 +81,14 @@ const fontSRC=["https://fonts.googleapis.com", "https://fonts.gstatic.com"];
 
 app.use(
     helmet.contentSecurityPolicy({
-        useDefaults:false,
         directives:{
             defaultSrc:[],
             connectSrc:["'self'"],
-            scriptSrc:["'unsafe-inline'", ...scriptSRC],
+            scriptSrc:["'self'", ...scriptSRC],
+            scriptSrcElem:["'self'", ...scriptSRC],
             styleSrc:["'self'", "'unsafe-inline'", ...styleSRC],
             workerSrc:["'self'", "blob:"],
-            objectSrc:[],
+            objectSrc:["'self'"],
             imgSrc:["'self'", "blob:", "data:"],
             fontSrc:["'self'", ...fontSRC]
         },
@@ -113,7 +114,6 @@ const sessionConfig={
 }
 app.use(session(sessionConfig));
 app.use(flash());
-app.use(helmet());
 
 const validateBoardName=(req,res,next)=>{
     const {error} =whiteboardSchema.validate(req.body);
@@ -176,6 +176,7 @@ app.post('/whiteboard-create', validateBoardName, catchAsync(async (req,res,next
 }));
 
 app.post('/charades-create', validateCharadesName, catchAsync(async (req,res,next)=>{
+    console.log(req.body.name)
     const newCharades= await Charades.findOne({name : req.body.room.name});
     if(newCharades!=null){
         //self.invalidate('name', 'name already exists');

@@ -50,15 +50,17 @@ var Charades = require('./models/charades');
 
 var _require = require('./schemas.js'),
     whiteboardSchema = _require.whiteboardSchema,
-    charadesSchema = _require.charadesSchema;
+    charadesSchema = _require.charadesSchema; //const dbUrl=process.env.DB_URL;
 
-var dbUrl = process.env.DB_URL; //const dbUrl='mongodb://localhost:27017/drawing';
+
+var dbUrl = 'mongodb://localhost:27017/drawing';
 
 var MongoStore = require("connect-mongo");
 
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useCreateIndex: true
 }).then(function () {
   console.log("MONGO connection open");
 })["catch"](function (err) {
@@ -91,14 +93,14 @@ var scriptSRC = ["https://cdn.jsdelivr.net", "https://fonts.gstatic.com", "https
 var styleSRC = ["https://stackpath.bootstrapcdn.com", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://fonts.gstatic.com"];
 var fontSRC = ["https://fonts.googleapis.com", "https://fonts.gstatic.com"];
 app.use(helmet.contentSecurityPolicy({
-  useDefaults: false,
   directives: {
     defaultSrc: [],
     connectSrc: ["'self'"],
-    scriptSrc: ["'unsafe-inline'"].concat(scriptSRC),
+    scriptSrc: ["'self'"].concat(scriptSRC),
+    scriptSrcElem: ["'self'"].concat(scriptSRC),
     styleSrc: ["'self'", "'unsafe-inline'"].concat(styleSRC),
     workerSrc: ["'self'", "blob:"],
-    objectSrc: [],
+    objectSrc: ["'self'"],
     imgSrc: ["'self'", "blob:", "data:"],
     fontSrc: ["'self'"].concat(fontSRC)
   }
@@ -123,7 +125,6 @@ var sessionConfig = {
 };
 app.use(session(sessionConfig));
 app.use(flash());
-app.use(helmet());
 
 var validateBoardName = function validateBoardName(req, res, next) {
   var _whiteboardSchema$val = whiteboardSchema.validate(req.body),
@@ -218,16 +219,17 @@ app.post('/charades-create', validateCharadesName, catchAsync(function _callee2(
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          _context2.next = 2;
+          console.log(req.body.name);
+          _context2.next = 3;
           return regeneratorRuntime.awrap(Charades.findOne({
             name: req.body.room.name
           }));
 
-        case 2:
+        case 3:
           newCharades = _context2.sent;
 
           if (!(newCharades != null)) {
-            _context2.next = 8;
+            _context2.next = 9;
             break;
           }
 
@@ -236,24 +238,24 @@ app.post('/charades-create', validateCharadesName, catchAsync(function _callee2(
           req.flash('error', "Room name is already taken.");
           return _context2.abrupt("return", res.redirect('create'));
 
-        case 8:
+        case 9:
           username = req.body.room.username;
           room = req.body.room.name;
           password = req.body.room.password;
           owner = req.body.room.username;
-          _context2.next = 14;
+          _context2.next = 15;
           return regeneratorRuntime.awrap(new Charades({
             name: room,
             password: password,
             owner: owner
           }));
 
-        case 14:
+        case 15:
           newRoom = _context2.sent;
           newRoom.save();
           res.redirect('charades');
 
-        case 17:
+        case 18:
         case "end":
           return _context2.stop();
       }
