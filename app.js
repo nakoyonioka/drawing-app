@@ -268,7 +268,6 @@ app.use((err, req, res, next)=>{
 });
 
 io.on('connection', (socket)=>{
-    console.log('a user connected');
     socket.on('joinRoom', ({username, room})=>{
         const user=userJoin(socket.id, username, room);
         socket.join(user.room);
@@ -317,7 +316,6 @@ io.on('connection', (socket)=>{
     socket.on('disconnect', () => {
         const user=userLeave(socket.id);
         if(user){
-            console.log(`${user.username} has diconnected.`);
             //send info on users that are in room
             io.to(user.room).emit('roomUsers', {
                 room: user.room,

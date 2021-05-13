@@ -7,8 +7,6 @@ const context=canvas.getContext('2d');
 canvas.width=1094;
 canvas.height=600;
 
-alert(canvas.height)
-
 const socket = io();
 
 colorPicker=document.getElementById('color-picker');
@@ -40,13 +38,8 @@ let lastPos = null;
 
 function draw(e) {
     const [x, y] = mousePos(e);
-    if (lastPos) {
-        socket.emit("mouse", selectedColor, line, lastPos, [x, y]);
-        lastPos = [x, y];
-    } else {
-        lastPos = [x, y];
-        socket.emit("mouse", selectedColor, line, lastPos, [x, y]);
-    }
+    socket.emit("mouse", selectedColor, line, lastPos, [x, y]);
+    lastPos = [x, y];
 }
 
 socket.on("mouse", (color, width, startPos, endPos) => {
@@ -109,10 +102,9 @@ socket.on("touch", (color, width, startPos, endPos)=>{
 })
 
 function drawTouch(e){
-    e.preventDefault();
     const [x,y]=touchPos(e);
-    lastPos=[x,y];
     socket.emit("touch", selectedColor, line, lastPos, [x, y]);
+    lastPos=[x,y];
 }
 
 canvas.addEventListener("touchstart", (e) => {
@@ -133,7 +125,7 @@ canvas.addEventListener("touchcancel", () => {
 document.addEventListener("touchend", (e) => {
     touchPressed = false;
     lastPos = null;
-    context.beginPath();
+    //context.beginPath();
 });
 
 let username="USER";

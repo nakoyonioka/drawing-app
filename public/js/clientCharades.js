@@ -104,13 +104,6 @@ function drawTouch(e){
     e.preventDefault();
     const [x,y]=touchPos(e);
     lastPos=[x,y];
-    context.strokeStyle = selectedColor;
-    context.lineWidth = line;
-    context.lineJoin = "round";
-    context.lineTo(...[x, y]);
-    context.stroke();
-    context.beginPath();
-    context.moveTo(...lastPos);
 }
 
 canvas.addEventListener("touchstart", (e) => {
@@ -133,7 +126,7 @@ canvas.addEventListener("touchcancel", () => {
 document.addEventListener("touchend", (e) => {
     touchPressed = false;
     lastPos = null;
-    context.beginPath();
+    //context.beginPath();
 });
 
 let username="USER";

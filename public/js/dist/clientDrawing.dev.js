@@ -22,7 +22,6 @@ var context = canvas.getContext('2d'); //canvas.width = canvas.clientWidth;
 
 canvas.width = 1094;
 canvas.height = 600;
-alert(canvas.height);
 var socket = io();
 colorPicker = document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);
@@ -50,13 +49,8 @@ function draw(e) {
       x = _mousePos2[0],
       y = _mousePos2[1];
 
-  if (lastPos) {
-    socket.emit("mouse", selectedColor, line, lastPos, [x, y]);
-    lastPos = [x, y];
-  } else {
-    lastPos = [x, y];
-    socket.emit("mouse", selectedColor, line, lastPos, [x, y]);
-  }
+  socket.emit("mouse", selectedColor, line, lastPos, [x, y]);
+  lastPos = [x, y];
 }
 
 socket.on("mouse", function (color, width, startPos, endPos) {
@@ -110,15 +104,13 @@ socket.on("touch", function (color, width, startPos, endPos) {
 });
 
 function drawTouch(e) {
-  e.preventDefault();
-
   var _touchPos = touchPos(e),
       _touchPos2 = _slicedToArray(_touchPos, 2),
       x = _touchPos2[0],
       y = _touchPos2[1];
 
-  lastPos = [x, y];
   socket.emit("touch", selectedColor, line, lastPos, [x, y]);
+  lastPos = [x, y];
 }
 
 canvas.addEventListener("touchstart", function (e) {
@@ -135,8 +127,7 @@ canvas.addEventListener("touchcancel", function () {
 });
 document.addEventListener("touchend", function (e) {
   touchPressed = false;
-  lastPos = null;
-  context.beginPath();
+  lastPos = null; //context.beginPath();
 });
 var username = "USER";
 var room = "ROOM";
