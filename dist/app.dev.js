@@ -412,20 +412,33 @@ io.on('connection', function (socket) {
 
     (_io$to = io.to(user.room)).emit.apply(_io$to, ["mouse"].concat(args));
   });
+  socket.on('touch', function () {
+    var _io$to2;
+
+    var user = getCurrentUser(socket.id);
+
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    drawQueue.push([].concat(args));
+
+    (_io$to2 = io.to(user.room)).emit.apply(_io$to2, ["touch"].concat(args));
+  });
   socket.on('drawer', function (name) {
     var user = getCurrentUser(socket.id);
     io.to(user.room).emit('drawer', name);
   });
   socket.on('roomWords', function () {
-    var _io$to2;
+    var _io$to3;
 
     var user = getCurrentUser(socket.id);
 
-    for (var _len2 = arguments.length, data = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      data[_key2] = arguments[_key2];
+    for (var _len3 = arguments.length, data = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+      data[_key3] = arguments[_key3];
     }
 
-    (_io$to2 = io.to(user.room)).emit.apply(_io$to2, ["roomWords"].concat(data));
+    (_io$to3 = io.to(user.room)).emit.apply(_io$to3, ["roomWords"].concat(data));
   });
   socket.on('clear screen', function (data) {
     var user = getCurrentUser(socket.id);

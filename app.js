@@ -288,6 +288,12 @@ io.on('connection', (socket)=>{
         io.to(user.room).emit("mouse", ...args);
     });
 
+    socket.on('touch', (...args) => {
+        const user=getCurrentUser(socket.id);
+        drawQueue.push([...args]);
+        io.to(user.room).emit("touch", ...args);
+    });
+
     socket.on('drawer', (name)=>{
         const user=getCurrentUser(socket.id);
         io.to(user.room).emit('drawer', name);

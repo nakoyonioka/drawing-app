@@ -92,17 +92,22 @@ function touchPos(e) {
     ];
 }
 
+socket.on("touch", (color, width, startPos, endPos)=>{
+    context.beginPath();
+    context.strokeStyle = color;
+    context.lineWidth = width;
+    context.lineJoin = "round";
+    context.moveTo(...startPos);
+    context.lineTo(...endPos);
+    context.closePath();
+    context.stroke();
+})
+
 function drawTouch(e){
     e.preventDefault();
     const [x,y]=touchPos(e);
     lastPos=[x,y];
-    context.strokeStyle = selectedColor;
-    context.lineWidth = line;
-    context.lineJoin = "round";
-    context.lineTo(...[x, y]);
-    context.stroke();
-    context.beginPath();
-    context.moveTo(...lastPos);
+    ocket.emit("touch", selectedColor, line, lastPos, [x, y]);
 }
 
 canvas.addEventListener("touchstart", (e) => {
