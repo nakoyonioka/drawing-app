@@ -4,8 +4,10 @@ const context=canvas.getContext('2d');
 //canvas.width = canvas.clientWidth;
 //canvas.height=3*canvas.clientHeight;
 
-canvas.width=1094;
-canvas.height=600;
+canvas.width='1094px';
+canvas.height='600px';
+
+alert(canvas.height);
 
 const socket = io();
 
@@ -90,8 +92,8 @@ document.addEventListener("mouseup", (e) => {
 function touchPos(e) {
     const rect = canvas.getBoundingClientRect();
     return [
-        (e.changedTouches[0].pageX - rect.left) * (canvas.width / rect.width),
-        (e.changedTouches[0].pageY - rect.top) * (canvas.height / rect.height),
+        (e.changedTouches[0].clientX - rect.left) * (canvas.width / rect.width),
+        (e.changedTouches[0].clientY - rect.top) * (canvas.height / rect.height),
     ];
 }
 
@@ -135,7 +137,7 @@ canvas.addEventListener("touchcancel", () => {
 document.addEventListener("touchend", (e) => {
     touchPressed = false;
     lastPos = null;
-    //context.beginPath();
+    context.beginPath();
 });
 
 let username="USER";

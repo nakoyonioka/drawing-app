@@ -142,7 +142,8 @@ canvas.addEventListener("touchcancel", function () {
 });
 document.addEventListener("touchend", function (e) {
   touchPressed = false;
-  lastPos = null; //context.beginPath();
+  lastPos = null;
+  context.beginPath();
 });
 var username = "USER";
 var room = "ROOM";

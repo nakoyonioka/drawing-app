@@ -142,7 +142,7 @@ canvas.addEventListener("touchcancel", () => {
 document.addEventListener("touchend", (e) => {
     touchPressed = false;
     lastPos = null;
-    //context.beginPath();
+    context.beginPath();
 });
 
 let username="USER";

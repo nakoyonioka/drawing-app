@@ -20,8 +20,9 @@ var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d'); //canvas.width = canvas.clientWidth;
 //canvas.height=3*canvas.clientHeight;
 
-canvas.width = 1094;
-canvas.height = 600;
+canvas.width = '1094px';
+canvas.height = '600px';
+alert(canvas.height);
 var socket = io();
 colorPicker = document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);
@@ -94,7 +95,7 @@ document.addEventListener("mouseup", function (e) {
 
 function touchPos(e) {
   var rect = canvas.getBoundingClientRect();
-  return [(e.changedTouches[0].pageX - rect.left) * (canvas.width / rect.width), (e.changedTouches[0].pageY - rect.top) * (canvas.height / rect.height)];
+  return [(e.changedTouches[0].clientX - rect.left) * (canvas.width / rect.width), (e.changedTouches[0].clientY - rect.top) * (canvas.height / rect.height)];
 }
 
 socket.on("touch", function (color, width, startPos, endPos) {
@@ -137,7 +138,8 @@ canvas.addEventListener("touchcancel", function () {
 });
 document.addEventListener("touchend", function (e) {
   touchPressed = false;
-  lastPos = null; //context.beginPath();
+  lastPos = null;
+  context.beginPath();
 });
 var username = "USER";
 var room = "ROOM";
