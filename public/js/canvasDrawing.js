@@ -55,43 +55,26 @@ function draw(e) {
     context.moveTo(...lastPos);
 }
 
+function touchPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return [
+        (e.changedTouches[0].clientX - rect.left) * (canvas.width / rect.width),
+        (e.changedTouches[0].clientY - rect.top) * (canvas.height / rect.height),
+    ];
+}
+
 function drawTouch(e){
     e.preventDefault();
-    let touches = e.changedTouches;
-    alert(touches.length);
-    for (let i = 0; i < touches.length; i++) {
-        let idx = ongoingTouchIndexById(touches[i].identifier);
-        alert(idx);
-        if (idx >= 0) {
-            lastPos=[touches[i].pageX, touches[i].pageY];
-            context.strokeStyle = selectedColor;
-            context.lineWidth = line;
-            context.lineJoin = "round";
-            context.lineTo(...[ongoingTouches[idx].pageX, ongoingTouches[idx].pageY]);
-            context.stroke();
-            context.beginPath();
-            context.moveTo(...lastPos);
-
-            ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
-        } 
-    }
+    const [x,y]=touchPos(e);
+    lastPos=[x,y];
+    context.strokeStyle = selectedColor;
+    context.lineWidth = line;
+    context.lineJoin = "round";
+    context.lineTo(...[x, y]);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(...lastPos);
 }
-
-function copyTouch({ identifier, pageX, pageY }) {
-  return { identifier, pageX, pageY };
-}
-
-function ongoingTouchIndexById(idToFind) {
-  for (var i = 0; i < ongoingTouches.length; i++) {
-    var id = ongoingTouches[i].identifier;
-
-    if (id == idToFind) {
-      return i;
-    }
-  }
-  return -1;    // not found
-}
-
 
 canvas.addEventListener("mousedown", (e) => {
     mousePressed = true;
