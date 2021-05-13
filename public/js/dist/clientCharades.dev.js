@@ -17,11 +17,15 @@ function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) ||
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d'); //canvas.width = canvas.clientWidth;
-//canvas.height=1*canvas.clientHeight;
+var context = canvas.getContext('2d');
+canvas.height = 3 * canvas.clientHeight;
 
-canvas.width = 1094;
-canvas.height = 600;
+if (canvas.clientWidth < 1000) {
+  canvas.width = 3 * canvas.clientWidth;
+} else {
+  canvas.width = canvas.clientWidth;
+}
+
 var socket = io();
 colorPicker = document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);
