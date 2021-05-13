@@ -18,16 +18,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
-canvas.height = 3 * canvas.clientHeight;
-alert(canvas.clientWidth);
-
-if (canvas.clientWidth < 1000) {
-  canvas.width = 10 * canvas.clientWidth;
-} else {
-  canvas.width = canvas.clientWidth;
-}
-
-alert(canvas.width);
+canvas.height = 0.7 * canvas.clientHeight;
+canvas.width = canvas.clientWidth;
 colorPicker = document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);
 colorPicker.addEventListener("change", watchColorPicker);

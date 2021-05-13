@@ -1,15 +1,8 @@
 const canvas = document.getElementById('canvas');
 const context=canvas.getContext('2d');
 
-
-canvas.height=3*canvas.clientHeight;
-
-if (canvas.clientWidth<1000){
-    canvas.width=3*canvas.clientWidth;
-}
-else{
-    canvas.width = canvas.clientWidth;
-}
+canvas.height=0.7*canvas.clientHeight;
+canvas.width = canvas.clientWidth;
 
 const socket = io();
 
