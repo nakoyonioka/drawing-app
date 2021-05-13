@@ -68,12 +68,11 @@ function draw(e) {
 function drawTouch(e) {
   e.preventDefault();
   var touches = e.changedTouches;
-  alert(e);
-  alert(touches.lengnth);
+  alert(touches.length);
 
   for (var i = 0; i < touches.length; i++) {
     var idx = ongoingTouchIndexById(touches[i].identifier);
-    alert(touches.lengnth);
+    alert(idx);
 
     if (idx >= 0) {
       lastPos = [touches[i].pageX, touches[i].pageY];

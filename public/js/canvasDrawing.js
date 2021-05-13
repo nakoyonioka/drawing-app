@@ -58,11 +58,10 @@ function draw(e) {
 function drawTouch(e){
     e.preventDefault();
     let touches = e.changedTouches;
-    alert(e);
-    alert(touches.lengnth);
+    alert(touches.length);
     for (let i = 0; i < touches.length; i++) {
         let idx = ongoingTouchIndexById(touches[i].identifier);
-        alert(touches.lengnth);
+        alert(idx);
         if (idx >= 0) {
             lastPos=[touches[i].pageX, touches[i].pageY];
             context.strokeStyle = selectedColor;
