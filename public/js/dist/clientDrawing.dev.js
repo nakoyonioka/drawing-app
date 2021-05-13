@@ -89,7 +89,7 @@ document.addEventListener("mouseup", function (e) {
 
 function touchPos(e) {
   var rect = canvas.getBoundingClientRect();
-  return [(e.changedTouches[0].clientX - rect.left) * (canvas.width / rect.width), (e.changedTouches[0].clientY - rect.top) * (canvas.height / rect.height)];
+  return [(e.changedTouches[0].pageX - rect.left) * (canvas.width / rect.width), (e.changedTouches[0].pageY - rect.top) * (canvas.height / rect.height)];
 }
 
 socket.on("touch", function (color, width, startPos, endPos) {

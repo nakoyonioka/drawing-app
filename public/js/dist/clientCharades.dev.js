@@ -97,17 +97,27 @@ document.addEventListener("mouseup", function (e) {
 
 function touchPos(e) {
   var rect = canvas.getBoundingClientRect();
-  return [(e.changedTouches[0].clientX - rect.left) * (canvas.width / rect.width), (e.changedTouches[0].clientY - rect.top) * (canvas.height / rect.height)];
+  return [(e.changedTouches[0].pageX - rect.left) * (canvas.width / rect.width), (e.changedTouches[0].pageY - rect.top) * (canvas.height / rect.height)];
 }
 
-function drawTouch(e) {
-  e.preventDefault();
+socket.on("touch", function (color, width, startPos, endPos) {
+  context.beginPath();
+  context.strokeStyle = color;
+  context.lineWidth = width;
+  context.lineJoin = "round";
+  context.moveTo.apply(context, _toConsumableArray(startPos));
+  context.lineTo.apply(context, _toConsumableArray(endPos));
+  context.closePath();
+  context.stroke();
+});
 
+function drawTouch(e) {
   var _touchPos = touchPos(e),
       _touchPos2 = _slicedToArray(_touchPos, 2),
       x = _touchPos2[0],
       y = _touchPos2[1];
 
+  socket.emit("touch", selectedColor, line, lastPos, [x, y]);
   lastPos = [x, y];
 }
 

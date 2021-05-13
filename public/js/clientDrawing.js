@@ -85,8 +85,8 @@ document.addEventListener("mouseup", (e) => {
 function touchPos(e) {
     const rect = canvas.getBoundingClientRect();
     return [
-        (e.changedTouches[0].clientX - rect.left) * (canvas.width / rect.width),
-        (e.changedTouches[0].clientY - rect.top) * (canvas.height / rect.height),
+        (e.changedTouches[0].pageX - rect.left) * (canvas.width / rect.width),
+        (e.changedTouches[0].pageY - rect.top) * (canvas.height / rect.height),
     ];
 }
 
