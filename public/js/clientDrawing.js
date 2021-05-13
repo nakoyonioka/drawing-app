@@ -11,8 +11,6 @@ else{
     canvas.width = canvas.clientWidth;
 }
 
-alert(canvas.height);
-
 const socket = io();
 
 colorPicker=document.getElementById('color-picker');

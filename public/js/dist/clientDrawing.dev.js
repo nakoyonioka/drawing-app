@@ -26,7 +26,6 @@ if (canvas.clientWidth < 1000) {
   canvas.width = canvas.clientWidth;
 }
 
-alert(canvas.height);
 var socket = io();
 colorPicker = document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);

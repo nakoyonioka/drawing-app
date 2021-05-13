@@ -2,13 +2,15 @@ const canvas = document.getElementById('canvas');
 let context=canvas.getContext('2d');
 
 canvas.height=3*canvas.clientHeight;
-
+alert(canvas.clientWidth);
 if (canvas.clientWidth<1000){
     canvas.width=3*canvas.clientWidth;
 }
 else{
     canvas.width = canvas.clientWidth;
 }
+
+alert(canvas.clientWidth);
 
 colorPicker=document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);
