@@ -1,7 +1,7 @@
 const canvas = document.getElementById('canvas');
 let context=canvas.getContext('2d');
 
-canvas.height=0.7*canvas.clientHeight;
+canvas.height=3*canvas.clientHeight;
 canvas.width = canvas.clientWidth;
 
 colorPicker=document.getElementById('color-picker');

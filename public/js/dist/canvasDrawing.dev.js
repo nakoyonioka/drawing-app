@@ -18,7 +18,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
-canvas.height = 0.7 * canvas.clientHeight;
+canvas.height = 3 * canvas.clientHeight;
 canvas.width = canvas.clientWidth;
 colorPicker = document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);
