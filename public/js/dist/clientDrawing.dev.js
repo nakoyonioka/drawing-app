@@ -89,13 +89,37 @@ document.addEventListener("mouseup", function (e) {
   lastPos = null;
   context.beginPath();
 });
+
+function touchPos(e) {
+  var rect = canvas.getBoundingClientRect();
+  return [(e.changedTouches[0].clientX - rect.left) * (canvas.width / rect.width), (e.changedTouches[0].clientY - rect.top) * (canvas.height / rect.height)];
+}
+
+function drawTouch(e) {
+  e.preventDefault();
+
+  var _touchPos = touchPos(e),
+      _touchPos2 = _slicedToArray(_touchPos, 2),
+      x = _touchPos2[0],
+      y = _touchPos2[1];
+
+  lastPos = [x, y];
+  context.strokeStyle = selectedColor;
+  context.lineWidth = line;
+  context.lineJoin = "round";
+  context.lineTo.apply(context, [x, y]);
+  context.stroke();
+  context.beginPath();
+  context.moveTo.apply(context, _toConsumableArray(lastPos));
+}
+
 canvas.addEventListener("touchstart", function (e) {
   touchPressed = true;
-  draw(e);
+  drawTouch(e);
 });
 canvas.addEventListener("touchmove", function (e) {
   if (touchPressed) {
-    draw(e);
+    drawTouch(e);
   }
 });
 canvas.addEventListener("touchcancel", function () {

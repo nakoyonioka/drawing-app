@@ -84,14 +84,35 @@ document.addEventListener("mouseup", (e) => {
     context.beginPath();
 });
 
+function touchPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return [
+        (e.changedTouches[0].clientX - rect.left) * (canvas.width / rect.width),
+        (e.changedTouches[0].clientY - rect.top) * (canvas.height / rect.height),
+    ];
+}
+
+function drawTouch(e){
+    e.preventDefault();
+    const [x,y]=touchPos(e);
+    lastPos=[x,y];
+    context.strokeStyle = selectedColor;
+    context.lineWidth = line;
+    context.lineJoin = "round";
+    context.lineTo(...[x, y]);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(...lastPos);
+}
+
 canvas.addEventListener("touchstart", (e) => {
     touchPressed = true;
-    draw(e);
+    drawTouch(e);
 });
 
 canvas.addEventListener("touchmove", (e) => {
     if (touchPressed) {
-        draw(e);
+        drawTouch(e);
     }
 });
 

@@ -100,7 +100,6 @@ document.addEventListener("mouseup", (e) => {
 canvas.addEventListener("touchstart", (e) => {
     touchPressed = true;
     drawTouch(e);
-
 });
 
 canvas.addEventListener("touchmove", (e) => {
