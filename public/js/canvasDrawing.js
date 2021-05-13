@@ -58,17 +58,18 @@ function draw(e) {
 function drawTouch(e){
     e.preventDefault();
     let touches = e.changedTouches;
-    alert(touches);
     for (let i = 0; i < touches.length; i++) {
         let idx = ongoingTouchIndexById(touches[i].identifier);
-
+        alert(touches.lengnth);
         if (idx >= 0) {
-            context.beginPath();
-            context.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
-            context.lineTo(touches[i].pageX, touches[i].pageY);
-            context.lineWidth = line;
+            lastPos=[touches[i].pageX, touches[i].pageY];
             context.strokeStyle = selectedColor;
+            context.lineWidth = line;
+            context.lineJoin = "round";
+            context.lineTo(...[ongoingTouches[idx].pageX, ongoingTouches[idx].pageY]);
             context.stroke();
+            context.beginPath();
+            context.moveTo(...lastPos);
 
             ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
         } 
