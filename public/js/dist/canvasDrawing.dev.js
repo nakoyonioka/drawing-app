@@ -68,6 +68,7 @@ function draw(e) {
 function drawTouch(e) {
   e.preventDefault();
   var touches = e.changedTouches;
+  alert(e);
   alert(touches.lengnth);
 
   for (var i = 0; i < touches.length; i++) {
