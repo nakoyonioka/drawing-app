@@ -58,6 +58,7 @@ function draw(e) {
 function drawTouch(e){
     e.preventDefault();
     let touches = e.changedTouches;
+    alert(touches);
     for (let i = 0; i < touches.length; i++) {
         let idx = ongoingTouchIndexById(touches[i].identifier);
 
