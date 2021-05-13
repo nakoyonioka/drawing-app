@@ -49,8 +49,13 @@ function draw(e) {
       x = _mousePos2[0],
       y = _mousePos2[1];
 
-  socket.emit("mouse", selectedColor, line, lastPos, [x, y]);
-  lastPos = [x, y];
+  if (lastPos) {
+    socket.emit("mouse", selectedColor, line, lastPos, [x, y]);
+    lastPos = [x, y];
+  } else {
+    lastPos = [x, y];
+    socket.emit("mouse", selectedColor, line, lastPos, [x, y]);
+  }
 }
 
 socket.on("mouse", function (color, width, startPos, endPos) {
@@ -109,8 +114,13 @@ function drawTouch(e) {
       x = _touchPos2[0],
       y = _touchPos2[1];
 
-  lastPos = [x, y];
-  socket.emit("touch", selectedColor, line, lastPos, [x, y]);
+  if (lastPos) {
+    socket.emit("touch", selectedColor, line, lastPos, [x, y]);
+    lastPos = [x, y];
+  } else {
+    lastPos = [x, y];
+    socket.emit("touch", selectedColor, line, lastPos, [x, y]);
+  }
 }
 
 canvas.addEventListener("touchstart", function (e) {

@@ -112,9 +112,14 @@ socket.on("touch", (color, width, startPos, endPos)=>{
 })
 
 function drawTouch(e){
-    const [x,y]=touchPos(e);
-    lastPos=[x,y];
-    socket.emit("touch", selectedColor, line, lastPos, [x, y]);
+    const [x, y] = touchPos(e);
+    if (lastPos) {
+        socket.emit("touch", selectedColor, line, lastPos, [x, y]);
+        lastPos = [x, y];
+    } else {
+        lastPos = [x, y];
+        socket.emit("touch", selectedColor, line, lastPos, [x, y]);
+    }
 }
 
 canvas.addEventListener("touchstart", (e) => {
