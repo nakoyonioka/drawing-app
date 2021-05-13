@@ -75,6 +75,27 @@ document.addEventListener("mouseup", (e) => {
     context.beginPath();
 });
 
+canvas.addEventListener("touchstart", (e) => {
+    mousePressed = true;
+    draw(e);
+});
+
+canvas.addEventListener("touchmove", (e) => {
+    if (mousePressed) {
+        draw(e);
+    }
+});
+
+canvas.addEventListener("touchcancel", () => {
+    lastPos = null;
+});
+
+document.addEventListener("touchend", (e) => {
+    mousePressed = false;
+    lastPos = null;
+    context.beginPath();
+});
+
 function watchColorPicker(event) {
     selectedColor=event.target.value;
     context.strokeStyle=selectedColor;

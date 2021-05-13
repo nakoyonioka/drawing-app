@@ -1,7 +1,7 @@
 <% layout('./layouts/boilerplate') %> 
 <div class="container">
     <div class="row mt-3">
-        <div class="col-lg-6 offset-3">
+        <div class="col-lg-6 cold-md-12 offset-lg-3">
             <% if (error && error.length) {%> 
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <%= error %> 
@@ -11,12 +11,12 @@
         </div>
     </div>
     <div calss="row">
-        <div class="col-lg-6 offset-3">
+        <div class="col-lg-6 cold-md-12 offset-lg-3">
             <button id="charades" type="submit" class="btn btn-lg btn-dark mt-3">Charades</button>
             <button id="whiteboard" type="submit" class="btn btn-lg btn-dark mt-3">Whiteboard</button>
         </div>
     </div>
-    <div class="col-lg-4 offset-4">
+    <div class="col-lg-4 cold-md-12 offset-lg-4">
         <form id="whiteboard-form" class="form-signin py-5 d-none" action="/join-whiteboard" method="POST" novalidate>
             <h1 class="h3 mb-3 font-weight-normal">Join whiteboard room</h1>
             <label for="username" class="sr-only"></label>
@@ -38,7 +38,7 @@
             <p class="mt-2 mb-3 text-muted">&copy; 2021</p>
         </form>
     </div>
-    <div class="col-lg-4 offset-4">
+    <div class="col-lg-4 cold-md-12 offset-lg-4">
         <form id="charades-form" class="form-signin py-5 d-none" action="/join-charades" method="POST" novalidate>
             <h1 class="h3 mb-3 font-weight-normal">Join charades room</h1>
             <label for="username" class="sr-only"></label>

@@ -80,6 +80,28 @@ canvas.addEventListener("mouseleave", () => {
 document.addEventListener("mouseup", (e) => {
     mousePressed = false;
     lastPos = null;
+    context.beginPath();
+});
+
+canvas.addEventListener("touchstart", (e) => {
+    mousePressed = true;
+    draw(e);
+});
+
+canvas.addEventListener("touchmove", (e) => {
+    if (mousePressed) {
+        draw(e);
+    }
+});
+
+canvas.addEventListener("touchcancel", () => {
+    lastPos = null;
+});
+
+document.addEventListener("touchend", (e) => {
+    mousePressed = false;
+    lastPos = null;
+    context.beginPath();
 });
 
 let username="USER";
