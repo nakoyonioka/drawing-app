@@ -26,6 +26,7 @@ selectLine.addEventListener('change', function(){
 });
 
 let mousePressed = false;
+let touchPressed = false;
 let lastPos = null;
 
 
@@ -76,12 +77,12 @@ document.addEventListener("mouseup", (e) => {
 });
 
 canvas.addEventListener("touchstart", (e) => {
-    mousePressed = true;
+    touchPressed = true;
     draw(e);
 });
 
 canvas.addEventListener("touchmove", (e) => {
-    if (mousePressed) {
+    if (touchPressed) {
         draw(e);
     }
 });
@@ -91,7 +92,7 @@ canvas.addEventListener("touchcancel", () => {
 });
 
 document.addEventListener("touchend", (e) => {
-    mousePressed = false;
+    touchPressed = false;
     lastPos = null;
     context.beginPath();
 });

@@ -87,7 +87,6 @@ document.addEventListener("mouseup", (e) => {
 canvas.addEventListener("touchstart", (e) => {
     touchPressed = true;
     draw(e);
-    alert("touched");
 });
 
 canvas.addEventListener("touchmove", (e) => {
