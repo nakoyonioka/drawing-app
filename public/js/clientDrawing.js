@@ -1,8 +1,13 @@
 const canvas = document.getElementById('canvas');
 const context=canvas.getContext('2d');
 
-canvas.width = canvas.clientWidth;
-canvas.height=3*canvas.clientHeight;
+//canvas.width = canvas.clientWidth;
+//canvas.height=3*canvas.clientHeight;
+
+canvas.width=1094;
+canvas.height=600;
+
+alert(canvas.height)
 
 const socket = io();
 
@@ -107,7 +112,7 @@ function drawTouch(e){
     e.preventDefault();
     const [x,y]=touchPos(e);
     lastPos=[x,y];
-    ocket.emit("touch", selectedColor, line, lastPos, [x, y]);
+    socket.emit("touch", selectedColor, line, lastPos, [x, y]);
 }
 
 canvas.addEventListener("touchstart", (e) => {

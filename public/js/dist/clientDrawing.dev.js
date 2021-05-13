@@ -17,9 +17,12 @@ function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) ||
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d');
-canvas.width = canvas.clientWidth;
-canvas.height = 3 * canvas.clientHeight;
+var context = canvas.getContext('2d'); //canvas.width = canvas.clientWidth;
+//canvas.height=3*canvas.clientHeight;
+
+canvas.width = 1094;
+canvas.height = 600;
+alert(canvas.height);
 var socket = io();
 colorPicker = document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);
@@ -115,7 +118,7 @@ function drawTouch(e) {
       y = _touchPos2[1];
 
   lastPos = [x, y];
-  ocket.emit("touch", selectedColor, line, lastPos, [x, y]);
+  socket.emit("touch", selectedColor, line, lastPos, [x, y]);
 }
 
 canvas.addEventListener("touchstart", function (e) {

@@ -1,8 +1,11 @@
 const canvas = document.getElementById('canvas');
 let context=canvas.getContext('2d');
 
-canvas.width = canvas.clientWidth;
-canvas.height=3*canvas.clientHeight;
+//canvas.width = canvas.clientWidth;
+//canvas.height=3*canvas.clientHeight;
+
+canvas.width=1094;
+canvas.height=600;
 
 colorPicker=document.getElementById('color-picker');
 colorPicker.addEventListener("input", watchColorPicker);
