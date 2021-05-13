@@ -120,6 +120,7 @@ const validateBoardName=(req,res,next)=>{
         const msg=error.details.map(el=>el.message).join(',');
         throw new ExpressError(msg,400);
     }
+    next();
 }
 
 const validateCharadesName=(req,res,next)=>{
@@ -128,6 +129,7 @@ const validateCharadesName=(req,res,next)=>{
         const msg=error.details.map(el=>el.message).join(',');
         throw new ExpressError(msg,400);
     }
+    next();
 }
 
 app.use((req,res,next)=>{
@@ -177,6 +179,7 @@ app.post('/whiteboard-create', validateBoardName, catchAsync(async (req,res,next
 app.post('/charades-create', validateCharadesName, catchAsync(async (req,res,next)=>{
     console.log(req.body.name)
     const newCharades= await Charades.findOne({name : req.body.room.name});
+    console.log(newCharades);
     if(newCharades!=null){
         //self.invalidate('name', 'name already exists');
         //throw new ExpressError("Invalid room name", 400);
@@ -193,6 +196,7 @@ app.post('/charades-create', validateCharadesName, catchAsync(async (req,res,nex
             password:password,
             owner:owner
         });
+        console.log(newRoom);
         newRoom.save();
         res.redirect('charades');
     }

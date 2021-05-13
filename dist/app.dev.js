@@ -134,6 +134,8 @@ var validateBoardName = function validateBoardName(req, res, next) {
     }).join(',');
     throw new ExpressError(msg, 400);
   }
+
+  next();
 };
 
 var validateCharadesName = function validateCharadesName(req, res, next) {
@@ -146,6 +148,8 @@ var validateCharadesName = function validateCharadesName(req, res, next) {
     }).join(',');
     throw new ExpressError(msg, 400);
   }
+
+  next();
 };
 
 app.use(function (req, res, next) {
@@ -225,9 +229,10 @@ app.post('/charades-create', validateCharadesName, catchAsync(function _callee2(
 
         case 3:
           newCharades = _context2.sent;
+          console.log(newCharades);
 
           if (!(newCharades != null)) {
-            _context2.next = 9;
+            _context2.next = 10;
             break;
           }
 
@@ -236,24 +241,25 @@ app.post('/charades-create', validateCharadesName, catchAsync(function _callee2(
           req.flash('error', "Room name is already taken.");
           return _context2.abrupt("return", res.redirect('create'));
 
-        case 9:
+        case 10:
           username = req.body.room.username;
           room = req.body.room.name;
           password = req.body.room.password;
           owner = req.body.room.username;
-          _context2.next = 15;
+          _context2.next = 16;
           return regeneratorRuntime.awrap(new Charades({
             name: room,
             password: password,
             owner: owner
           }));
 
-        case 15:
+        case 16:
           newRoom = _context2.sent;
+          console.log(newRoom);
           newRoom.save();
           res.redirect('charades');
 
-        case 18:
+        case 20:
         case "end":
           return _context2.stop();
       }
