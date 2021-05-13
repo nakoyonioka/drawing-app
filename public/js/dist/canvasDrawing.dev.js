@@ -65,6 +65,48 @@ function draw(e) {
   context.moveTo.apply(context, _toConsumableArray(lastPos));
 }
 
+function drawTouch(e) {
+  e.preventDefault();
+  var touches = e.changedTouches;
+
+  for (var i = 0; i < touches.length; i++) {
+    var idx = ongoingTouchIndexById(touches[i].identifier);
+
+    if (idx >= 0) {
+      context.beginPath();
+      context.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+      context.lineTo(touches[i].pageX, touches[i].pageY);
+      context.lineWidth = line;
+      context.strokeStyle = selectedColor;
+      context.stroke();
+      ongoingTouches.splice(idx, 1, copyTouch(touches[i])); // swap in the new touch record
+    }
+  }
+}
+
+function copyTouch(_ref) {
+  var identifier = _ref.identifier,
+      pageX = _ref.pageX,
+      pageY = _ref.pageY;
+  return {
+    identifier: identifier,
+    pageX: pageX,
+    pageY: pageY
+  };
+}
+
+function ongoingTouchIndexById(idToFind) {
+  for (var i = 0; i < ongoingTouches.length; i++) {
+    var id = ongoingTouches[i].identifier;
+
+    if (id == idToFind) {
+      return i;
+    }
+  }
+
+  return -1; // not found
+}
+
 canvas.addEventListener("mousedown", function (e) {
   mousePressed = true;
   draw(e);
@@ -84,11 +126,11 @@ document.addEventListener("mouseup", function (e) {
 });
 canvas.addEventListener("touchstart", function (e) {
   touchPressed = true;
-  draw(e);
+  drawTouch(e);
 });
 canvas.addEventListener("touchmove", function (e) {
   if (touchPressed) {
-    draw(e);
+    drawTouch(e);
   }
 });
 canvas.addEventListener("touchcancel", function () {

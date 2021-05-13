@@ -55,6 +55,41 @@ function draw(e) {
     context.moveTo(...lastPos);
 }
 
+function drawTouch(e){
+    e.preventDefault();
+    let touches = e.changedTouches;
+    for (let i = 0; i < touches.length; i++) {
+        let idx = ongoingTouchIndexById(touches[i].identifier);
+
+        if (idx >= 0) {
+            context.beginPath();
+            context.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+            context.lineTo(touches[i].pageX, touches[i].pageY);
+            context.lineWidth = line;
+            context.strokeStyle = selectedColor;
+            context.stroke();
+
+            ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
+        } 
+    }
+}
+
+function copyTouch({ identifier, pageX, pageY }) {
+  return { identifier, pageX, pageY };
+}
+
+function ongoingTouchIndexById(idToFind) {
+  for (var i = 0; i < ongoingTouches.length; i++) {
+    var id = ongoingTouches[i].identifier;
+
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1;    // not found
+}
+
+
 canvas.addEventListener("mousedown", (e) => {
     mousePressed = true;
     draw(e);
@@ -78,12 +113,13 @@ document.addEventListener("mouseup", (e) => {
 
 canvas.addEventListener("touchstart", (e) => {
     touchPressed = true;
-    draw(e);
+    drawTouch(e);
+
 });
 
 canvas.addEventListener("touchmove", (e) => {
     if (touchPressed) {
-        draw(e);
+        drawTouch(e);
     }
 });
 
